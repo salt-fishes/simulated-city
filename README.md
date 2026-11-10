@@ -2,12 +2,12 @@
 
 > 当前版本：**1.0.9 Beta13**  
 > 游戏版本：Minecraft **1.12.2** / Forge **14.23.5.2860** / Java **8**  
-> 维护仓库：<https://github.com/salt-fishes/sim>  
-> 下载：<https://github.com/salt-fishes/sim/releases>
+> 维护仓库：<https://github.com/salt-fishes/simulated-city>  
+> 下载：<https://github.com/salt-fishes/simulated-city/releases>
 
 这是一个 1.12.2 城市模拟整合包：你以“市长”的身份接管一片空地，雇佣 NPC 建造住宅、商店、农场、矿场和仓库，靠租金、工资和供应链把城镇运转起来。
 
-本仓库是 Simulated / Sim-U 的社区维护分支。我们保留城市建造的核心循环、现有建筑和职业框架，主要做 bug 修复、兼容性补充、中文本地化和旧版遗留内容清理，不是重制版。
+本仓库是 Simulated / Sim-U 的独立社区维护仓库。我们保留城市建造的核心循环、现有建筑和职业框架，主要做 bug 修复、兼容性补充、中文本地化和旧版遗留内容清理，不是重制版。
 
 ## 这个版本有什么
 
@@ -77,7 +77,7 @@
 
 ## 快速开始（PCL 完整版）
 
-1. 从 [Releases](https://github.com/salt-fishes/sim/releases) 下载 `Simulated-City-1.12.2-1.0.9-beta13-PCL.zip`；
+1. 从 [Releases](https://github.com/salt-fishes/simulated-city/releases) 下载 `Simulated-City-1.12.2-1.0.9-beta13-PCL.zip`；
 2. 解压到任意目录（不要在压缩包里直接运行）；
 3. 双击 `启动器.bat` 打开 PCL2，确认选中的是 `Simulated-Beta13-Pack`；
 4. 点击“启动游戏”。不需要下载游戏本体或 Java。
@@ -95,7 +95,7 @@
 5. 完工后右键控制箱查看住户/员工；住宅有人入住后每天收租；
 6. 需要材料就做耕种箱/采矿箱；商店需要仓库 + 快递员组成物流中心。
 
-建筑工只能从玩家 16 格内的失业 NPC 中雇佣。如果列表为空，先在附近找找，或等新居民出现。
+建筑工要从失业 NPC 里雇佣。如果列表为空，先在附近找找，或等新居民出现。
 
 游戏内按 `V` 可以随时打开市长手册；卷轴丢了用 `/simmode` 重新打开任命界面；测试资金用 `/credits <金额>`。
 
@@ -104,7 +104,7 @@
 需要 **JDK 8**（Forge 1.12.2 / ForgeGradle 2.3 不支持 JDK 17+）。
 
 ```bat
-git clone https://github.com/salt-fishes/sim.git
+git clone https://github.com/salt-fishes/simulated-city.git
 cd sim
 set JAVA_HOME=C:\path\to\jdk8
 gradlew.bat build
@@ -184,9 +184,9 @@ Pam's-HarvestCraft-汉化/ 潘马斯农场简体中文补全资源包
 **Simulated City Community Edition** is a community-maintained Minecraft 1.12.2 city-simulation modpack. It keeps the original city-building loop, existing blueprints and job values, while fixing bugs, adding Chinese localization, improving onboarding, and cleaning up legacy content.
 
 - Requires Minecraft 1.12.2, Forge 14.23.5.2860, Java 8.
-- Download the PCL full package from [Releases](https://github.com/salt-fishes/sim/releases); extract, run `启动器.bat`, and launch `Simulated-Beta13-Pack`.
+- Download the PCL full package from [Releases](https://github.com/salt-fishes/simulated-city/releases); extract, run `启动器.bat`, and launch `Simulated-Beta13-Pack`.
 - Press `V` in game for the 16-page mayor's handbook.
 - Source diff against upstream 1.0.9 Beta: 94 files unchanged, 119 modified, 24 added, 40 removed; see [docs/upstream-diff.md](docs/upstream-diff.md).
-- Build from source with JDK 8: `git clone https://github.com/salt-fishes/sim.git && cd sim && gradlew.bat build`.
+- Build from source with JDK 8: `git clone https://github.com/salt-fishes/simulated-city.git && cd sim && gradlew.bat build`.
 - Known issue: door/bed/sign/stairs/torch/painting placement in blueprints is still being fixed; see [docs/blueprint-special-blocks.md](docs/blueprint-special-blocks.md).
 - License: upstream code/assets remain under their original terms; original contributions in this repository are MIT. See [LICENSE](LICENSE).

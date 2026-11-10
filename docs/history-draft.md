@@ -44,7 +44,7 @@
   - 界面：建筑列表搜索/筛选/排序、整行点击、按钮居中、启动卷轴流程。
   - 整合包：22 个模组、Java 8、完整游戏本体，PCL 绿色完整版解压即玩。
 - 定位：不重做玩法，不换建筑风格，尽量保留原版的建筑、职业、数值和节奏；只修 bug，删掉不合理或冗余的内容，并清理旧版遗留的推广信息。
-- 源码与问题反馈：https://github.com/salt-fishes/sim （分支 `1.12.2`，维护仓库 fork 自上游 `trhsy/sim`）。
+- 源码与问题反馈：https://github.com/salt-fishes/simulated-city （分支 `1.12.2`，独立维护仓库，源码基于上游 `trhsy/sim`）。
 
 ## 三、手册内简版（建议直接放这 6 条）
 
@@ -53,7 +53,7 @@
 3. 1.12.2 公共版本从 1.0.0 更到 1.0.8，主要修幽灵 NPC、NPC 移动、建筑乱码、面包店/肉铺等问题。
 4. 本整合包从 1.0.9 Beta3 修到 Beta12：重做存档/网络/任务调度，修 NPC、建筑、经济、物流，补 Pam's/四季兼容与中文本地化。
 5. 我们保留原版建筑、职业和节奏，只修 bug、删冗余和不合理内容，并清理旧版推广信息；希望你还是能玩到当年那个“模拟大都市”的味道。
-6. 源码、问题反馈和后续更新：https://github.com/salt-fishes/sim（分支 `1.12.2`）。
+6. 源码、问题反馈和后续更新：https://github.com/salt-fishes/simulated-city（分支 `1.12.2`）。
 
 ## 四、发布说明版（稍长，可放使用说明）
 
@@ -76,7 +76,7 @@
 - MC百科更新日志：https://www.mcmod.cn/class/version/5907.html
 - CurseForge Sim-U：https://www.curseforge.com/minecraft/mc-mods/sim-u
 - CurseForge trhsy-Sim-U 整合包：https://www.curseforge.com/minecraft/modpacks/trhsy-sim-u
-- 我们的开源维护仓库：https://github.com/salt-fishes/sim （分支 `1.12.2`）
+- 我们的开源维护仓库：https://github.com/salt-fishes/simulated-city （分支 `1.12.2`）
 - 本地记录：`模拟城市 1.12.2 精选整合包-说明.md`、`测试报告/`、`游戏机制设计审查-1.0.9-beta2.md`
 
 ## 七、事实核对备注
@@ -84,4 +84,4 @@
 - “2012 年”依据：Scott 页面上的 4th Edition 手册写于 2012 年 10 月，且最早版本可到 Minecraft 1.1；公开资料没有更精确的首次发布日期。
 - “1.7.10 社区重制”有多个分支：AshJack 的 Sim-U-Kraft Reloaded 是其中一支；MC百科还提到后续中文版“接替之前的作者重置”。草稿里用“社区重制”统称，避免把分支关系写死。
 - 1.12.2 的 1.0.0—1.0.8 日期和修复项来自 MC百科更新日志与 CurseForge 文件页；1.0.9 Beta3—Beta12 的改动来自本地源码/测试记录，没有公开页面。
-- 开源仓库是 `trhsy/sim` 的 fork，当前维护分支为 `1.12.2`；如果以后换仓库地址或分支名，手册和 `mcmod.info` 要同步更新。
+- 开源仓库是独立维护仓库，基于上游 `trhsy/sim` 的源码，当前维护分支为 `1.12.2`；如果以后换仓库地址或分支名，手册和 `mcmod.info` 要同步更新。
