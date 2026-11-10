@@ -105,7 +105,7 @@
 
 ```bat
 git clone https://github.com/salt-fishes/simulated-city.git
-cd sim
+cd simulated-city
 set JAVA_HOME=C:\path\to\jdk8
 gradlew.bat build
 ```
@@ -187,6 +187,6 @@ Pam's-HarvestCraft-汉化/ 潘马斯农场简体中文补全资源包
 - Download the PCL full package from [Releases](https://github.com/salt-fishes/simulated-city/releases); extract, run `启动器.bat`, and launch `Simulated-Beta13-Pack`.
 - Press `V` in game for the 16-page mayor's handbook.
 - Source diff against upstream 1.0.9 Beta: 94 files unchanged, 119 modified, 24 added, 40 removed; see [docs/upstream-diff.md](docs/upstream-diff.md).
-- Build from source with JDK 8: `git clone https://github.com/salt-fishes/simulated-city.git && cd sim && gradlew.bat build`.
+- Build from source with JDK 8: `git clone https://github.com/salt-fishes/simulated-city.git && cd simulated-city && gradlew.bat build`.
 - Known issue: door/bed/sign/stairs/torch/painting placement in blueprints is still being fixed; see [docs/blueprint-special-blocks.md](docs/blueprint-special-blocks.md).
 - License: upstream code/assets remain under their original terms; original contributions in this repository are MIT. See [LICENSE](LICENSE).
