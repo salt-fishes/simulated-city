@@ -1,5 +1,7 @@
 # 1.0.9 Beta13 — 新手引导、材料兼容与蓝图包修复
 
+> 维护仓库：<https://github.com/salt-fishes/simulated-city>（独立仓库，不是 GitHub fork）
+
 这是 Simulated City 社区维护版的 Beta13 测试包，基于 Minecraft 1.12.2 / Forge 14.23.5.2860。
 
 ## 本版重点
@@ -49,8 +51,8 @@
 ## 下载
 
 - 文件：`Simulated-City-1.12.2-1.0.9-beta13-PCL.zip`
-- 大小：`282,737,815` 字节（约 269.7 MB）
-- SHA-256：`FC6B58B216FFDE9A17D322948EED96AE3711F2C3DEE0D79E3A02F94C83FFF9E2`
+- 大小：`282,737,903` 字节（约 269.7 MB）
+- SHA-256：`E9B0E03D49D2F8B378FF30AAD15C098A01B9F9D66C655A1087E695BBC7E7EFAF`
 
 ## 安装
 
