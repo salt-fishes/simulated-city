@@ -62,7 +62,7 @@ repositories {
     mavenLocal()
 }
 
-version = "1.12.2-1.0.9 Beta13"
+version = "1.12.2-1.1.0"
 group = "com.trhsy.sim" 
 archivesBaseName = "simulated"
 

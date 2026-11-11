@@ -60,6 +60,10 @@ public class NetWorkLoader {
         registerMessage(PacketNewFolk.Handler.class,PacketNewFolk.class,Side.SERVER);
         //物流中心开关
         registerMessage(PacketToggleLogistics.Handler.class,PacketToggleLogistics.class,Side.SERVER);
+        //请求建筑传送列表
+        registerMessage(PacketRequestBuildingList.Handler.class,PacketRequestBuildingList.class,Side.SERVER);
+        //传送到指定建筑
+        registerMessage(PacketTeleportToBuilding.Handler.class,PacketTeleportToBuilding.class,Side.SERVER);
 
 
 
@@ -111,6 +115,8 @@ public class NetWorkLoader {
         registerMessage(PacketOpenFlowerGui.Handler.class,PacketOpenFlowerGui.class,Side.CLIENT);
         //物流中心设置快照
         registerMessage(PacketLogisticsSnapshot.Handler.class,PacketLogisticsSnapshot.class,Side.CLIENT);
+        //建筑传送列表
+        registerMessage(PacketReturnBuildingList.Handler.class,PacketReturnBuildingList.class,Side.CLIENT);
 
 
 

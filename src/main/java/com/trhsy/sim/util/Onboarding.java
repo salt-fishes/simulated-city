@@ -39,6 +39,16 @@ public final class Onboarding {
         return false;
     }
 
+    /** 玩家是否已经领取过新手工具（旧存档迁移用）。 */
+    public static boolean hasStarterKit(EntityPlayer player) {
+        if (player == null) {
+            return false;
+        }
+        NBTTagCompound data = player.getEntityData();
+        NBTTagCompound persisted = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+        return persisted.getBoolean(KIT_TAG);
+    }
+
     /** 没有卷轴时补发一个，返回是否真的发了。 */
     public static boolean giveScroll(EntityPlayer player) {
         if (player == null || ItemLoader.itemSimULoader == null || hasScroll(player)) {

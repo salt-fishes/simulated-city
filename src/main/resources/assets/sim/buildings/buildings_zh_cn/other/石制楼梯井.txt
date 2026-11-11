@@ -1,0 +1,6 @@
+5x5x4
+B=minecraft:stone,0;C=minecraft:stone_slab,0;D=minecraft:stone_slab,8;E=minecraft:iron_bars,0;AU=SpatialHeather;DIR=2;DESC=暂无;
+BBABBBCAABBD$ABBAAABBB*BB
+BBABBBAAABBAEABBCDABBBBBB
+BB*BBBAAABBAEDBBAACBBBBBB
+BBBBBBADCBBAEABBAAABBBABB

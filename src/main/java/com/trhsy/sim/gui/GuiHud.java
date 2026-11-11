@@ -2,6 +2,7 @@ package com.trhsy.sim.gui;
 
 import com.trhsy.sim.loader.ModSimClientLoader;
 import com.trhsy.sim.loader.ModSimLoader;
+import com.trhsy.sim.util.SeasonCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -33,9 +34,6 @@ public class GuiHud extends GuiScreen {
             }
             String worldname = "unknown";
             try {
-                if (ModSimClientLoader.gamemode == 999) {
-                    return;
-                }
                 worldname = this.mc.getIntegratedServer().getFolderName();
             } catch (Exception var7) {
                 worldname = "Server";
@@ -49,21 +47,26 @@ public class GuiHud extends GuiScreen {
                                 hudOffset = 20;
                             }
 
-                            String text;
-                            if (ModSimClientLoader.gamemode == 1) {
-                                //世界名 人口
-                                text = worldname + " (" + ModSimClientLoader.dayOfWeek + ") - " + new TextComponentTranslation("container.sim.trhsy3", new Object[0]).getUnformattedText() + ": " + ModSimClientLoader.tempHireableNpcNames.size();
-                            } else {
-                                //世界名  人口  资金
-                                text = worldname + " (" + ModSimClientLoader.dayOfWeek + ") - " + new TextComponentTranslation("container.sim.trhsy3", new Object[0]).getUnformattedText() + ": " + ModSimClientLoader.tempHireableNpcNames.size() + "   " + new TextComponentTranslation("container.sim.trhsy4", new Object[0]).getUnformattedText() + ": " + ModSimLoader.displayMoney(ModSimClientLoader.money);
+                            String dayText = new TextComponentTranslation("container.sim.title_days",
+                                    ModSimClientLoader.gameDay).getUnformattedText();
+                            String season = SeasonCompat.getSeasonName(mc.world);
+                            String line1 = worldname + " " + dayText + " (" + this.weekdayName() + ")"
+                                    + (season.isEmpty() ? "" : " · " + season);
+                            String popText = new TextComponentTranslation("container.sim.trhsy3",
+                                    new Object[0]).getUnformattedText();
+                            String line2 = popText + ": " + ModSimClientLoader.tempHireableNpcNames.size();
+                            if (ModSimClientLoader.gamemode != 1) {
+                                String moneyText = new TextComponentTranslation("container.sim.trhsy4",
+                                        new Object[0]).getUnformattedText();
+                                line2 += "   " + moneyText + ": " + ModSimLoader.displayMoney(ModSimClientLoader.money);
                             }
-                            this.drawHudText(text, hudOffset);
+                            this.drawHudText(line1, line2, hudOffset);
                         }
                     } else if (!Minecraft.getMinecraft().gameSettings.showDebugInfo) {
-                        this.drawHudText(this.idleHudText(), 0);
+                        this.drawHudText(this.idleHudText(), "", 0);
                     }
                 } else {
-                    this.drawHudText(this.idleHudText(), 0);
+                    this.drawHudText(this.idleHudText(), "", 0);
                 }
 
             } catch (Exception e) {
@@ -84,8 +87,20 @@ public class GuiHud extends GuiScreen {
         return new TextComponentTranslation(key, new Object[0]).getUnformattedText();
     }
 
-    private void drawHudText(String text, int offset) {
-        int x = (this.width - this.mc.fontRenderer.getStringWidth(text)) / 2;
-        this.mc.fontRenderer.drawString(text, x, 2 + offset, 16777215, true);
+    private String weekdayName() {
+        String[] keys = {
+                "container.sim.simSun", "container.sim.simMon", "container.sim.simTue",
+                "container.sim.simWed", "container.sim.simThu", "container.sim.simFri",
+                "container.sim.simSat"
+        };
+        int index = ModSimClientLoader.dayOfWeek;
+        if (index < 0 || index >= keys.length) {
+            index = 0;
+        }
+        return new TextComponentTranslation(keys[index], new Object[0]).getUnformattedText();
+    }
+
+    private void drawHudText(String line1, String line2, int offset) {
+        GuiStyle.hudText(line1, line2, offset);
     }
 }

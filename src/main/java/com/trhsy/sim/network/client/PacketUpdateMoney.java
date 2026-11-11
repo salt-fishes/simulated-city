@@ -22,12 +22,15 @@ public class PacketUpdateMoney implements IMessage {
     public float money;
     /**模拟城市是否开始运行*/
     public Boolean sim_is_running;
+    /** 是否已经接受过任命 */
+    public boolean appointed;
     public PacketUpdateMoney() {
         this.gamemode = ModSimLoader.gamemode;
         this.dayOfWeek = ModSimLoader.dayOfWeek;
         this.gameDay = ModSimLoader.gameDay;
         this.money = ModSimLoader.money;
         this.sim_is_running = ModSimLoader.sim_is_running;
+        this.appointed = ModSimLoader.appointed;
     }
     @Override
     public void fromBytes(ByteBuf buf) {
@@ -36,6 +39,7 @@ public class PacketUpdateMoney implements IMessage {
         this.gameDay = buf.readInt();
         this.money = buf.readFloat();
         this.sim_is_running = buf.readBoolean();
+        this.appointed = buf.readBoolean();
     }
 
     @Override
@@ -45,6 +49,7 @@ public class PacketUpdateMoney implements IMessage {
         buf.writeInt(this.gameDay);
         buf.writeFloat(this.money);
         buf.writeBoolean(this.sim_is_running);
+        buf.writeBoolean(this.appointed);
     }
     public static class Handler implements IMessageHandler<PacketUpdateMoney, IMessage> {
         public Handler() {
@@ -68,6 +73,7 @@ public class PacketUpdateMoney implements IMessage {
             ModSimClientLoader.gameDay = message.gameDay;
             ModSimClientLoader.money = message.money;
             ModSimClientLoader.sim_is_running = message.sim_is_running;
+            ModSimClientLoader.appointed = message.appointed;
         }
     }
     }

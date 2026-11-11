@@ -99,7 +99,15 @@ public class BlockConstructorBox extends Block {
         int buildDirection = 0;
 
         if (!worldIn.isRemote) {
+            // 旧存档迁移：已经拿到新手工具但存档里没有 appointed 的玩家，视为已任命。
+            if (!ModSimLoader.appointed && Onboarding.hasStarterKit(playerIn)) {
+                SimmodeStart.markAppointed(worldIn);
+            }
             if (ModSimLoader.gamemode == 999) {
+                // 已任命过就只提示“城市未启动”，GUI 会直接进模式页，不会再要求接受任命。
+                Onboarding.send(playerIn, ModSimLoader.appointed
+                        ? "container.sim.tip.city_off"
+                        : "container.sim.tip.city_not_started");
                 NetWorkLoader.net.sendTo(new PacketOpenSetupGui(), (EntityPlayerMP) playerIn);
                 return true;
             }

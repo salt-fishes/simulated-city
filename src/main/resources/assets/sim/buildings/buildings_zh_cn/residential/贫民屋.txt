@@ -1,0 +1,5 @@
+3x2x3
+B=minecraft:dirt,0;AU=FarkDerpMan;DIR=2;DESC=暂无;
+$ABB!B
+BABBAB
+ABAABA

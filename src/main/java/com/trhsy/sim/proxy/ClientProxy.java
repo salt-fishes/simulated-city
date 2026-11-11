@@ -1,12 +1,13 @@
 package com.trhsy.sim.proxy;
 
 import com.trhsy.sim.gui.GuiHud;
+import com.trhsy.sim.gui.GuiStyle;
 import com.trhsy.sim.key.KeyboardManager;
 import com.trhsy.sim.loader.*;
 import com.trhsy.sim.loader.render.ItemRenderLoader;
 import com.trhsy.sim.util.BuildingsExtractor;
+import com.trhsy.sim.util.SeasonCompat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -75,9 +76,6 @@ public class ClientProxy extends CommonProxy {
             if (mc!= null && mc.world!=null&&mc.world.isRemote) {
                 String worldname = "unknown";
                 try {
-                    if (ModSimClientLoader.gamemode== 999) {
-                        return;
-                    }
                     worldname = mc.getIntegratedServer().getFolderName();
                 } catch (Exception var7) {
                     worldname = "Server";
@@ -114,14 +112,20 @@ public class ClientProxy extends CommonProxy {
                                         fs_day_of_week=new TextComponentTranslation("container.sim.simSat",new Object[0]).getUnformattedText();
                                         break;
                                 }
-                                if (ModSimClientLoader.gamemode == 1) {
-
-                                    //世界名 人口
-                                    drawHudText(mc, worldname+" "+new TextComponentTranslation("container.sim.title_days",new Object[]{ModSimClientLoader.gameDay}).getUnformattedText() +" (" + fs_day_of_week + ") - "+ new TextComponentTranslation("container.sim.trhsy3",new Object[0]).getUnformattedText() +": " + ModSimClientLoader.tempHireableNpcNames.size(), HUDoffset);
-                                } else {
-                                    //世界名  人口  资金
-                                    drawHudText(mc, worldname+" "+new TextComponentTranslation("container.sim.title_days",new Object[]{ModSimClientLoader.gameDay}).getUnformattedText()+" (" +fs_day_of_week + ") - "+new TextComponentTranslation("container.sim.trhsy3",new Object[0]).getUnformattedText() +": " + ModSimClientLoader.tempHireableNpcNames.size() + "   "+ new TextComponentTranslation("container.sim.trhsy4",new Object[0]).getUnformattedText() +": " + ModSimLoader.displayMoney(ModSimClientLoader.money), HUDoffset);
+                                String dayText = new TextComponentTranslation("container.sim.title_days",
+                                        ModSimClientLoader.gameDay).getUnformattedText();
+                                String season = SeasonCompat.getSeasonName(mc.world);
+                                String line1 = worldname + " " + dayText + " (" + fs_day_of_week + ")"
+                                        + (season.isEmpty() ? "" : " · " + season);
+                                String popText = new TextComponentTranslation("container.sim.trhsy3",
+                                        new Object[0]).getUnformattedText();
+                                String line2 = popText + ": " + ModSimClientLoader.tempHireableNpcNames.size();
+                                if (ModSimClientLoader.gamemode != 1) {
+                                    String moneyText = new TextComponentTranslation("container.sim.trhsy4",
+                                            new Object[0]).getUnformattedText();
+                                    line2 += "   " + moneyText + ": " + ModSimLoader.displayMoney(ModSimClientLoader.money);
                                 }
+                                GuiStyle.hudText(line1, line2, HUDoffset);
                             }
                         } else if (!Minecraft.getMinecraft().gameSettings.showDebugInfo) {
                             drawHudText(mc, idleHudText(), 0);
@@ -145,7 +149,7 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    /** HUD 使用 ScaledResolution 的真实宽度居中，不再依赖未初始化的 GuiScreen.width。 */
+    /** HUD 使用 ScaledResolution 的真实宽度靠左显示。 */
     /**
      * 未启动和“已启动但还在加载”是两种状态，提示不能混在一起。
      */
@@ -157,8 +161,6 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void drawHudText(Minecraft mc, String text, int offset) {
-        int width = new ScaledResolution(mc).getScaledWidth();
-        int x = (width - mc.fontRenderer.getStringWidth(text)) / 2;
-        mc.fontRenderer.drawString(text, x, 2 + offset, 16777215, true);
+        GuiStyle.hudText(text, "", offset);
     }
 }

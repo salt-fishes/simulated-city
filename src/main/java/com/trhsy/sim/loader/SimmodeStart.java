@@ -41,6 +41,13 @@ public class SimmodeStart {
      * 已加载世界
      **/
     public static boolean hasLoadedWorld = false;
+    /**
+     * 经济/日历/模式是否已经从 SimStore 读取。
+     * 世界加载时立刻读取，不必等 NPC/建筑加载完。
+     **/
+    public static boolean stateLoaded = false;
+    /** 玩家在重数据加载前改过模式；此时禁止用存档旧值覆盖。 */
+    public static boolean gamemodeDirty = false;
     //新的一天
     public static boolean newDay = true;
     //新的一天是否收租
@@ -113,6 +120,56 @@ public class SimmodeStart {
             }
     );*/
     /**
+     * 世界加载后第一个 tick 或玩家加入时，立刻读取经济、日历和模式。
+     *
+     * <p>原来这些数据要等 {@link #simModLoad(World)} 在玩家加入 15 秒后才读，
+     * 新玩家在这段时间里接受任命，15 秒后会被存档里的 999 覆盖，出现“反复任命”。
+     * 这里只读轻量状态，NPC/建筑仍由 simModLoad 延后加载。</p>
+     */
+    public static void loadEconomyState(World world) {
+        if (world == null || world.isRemote || world.provider.getDimension() != 0) {
+            return;
+        }
+        SimStore store = SimStore.get(world);
+        if (store == null) {
+            return;
+        }
+        if (gamemodeDirty) {
+            // 玩家已经在本世界改过模式，不能再拿存档旧值覆盖；
+            // 但经济/日历仍要读，否则会停留在默认 10。
+            ModSimLoader.money = store.money;
+            ModSimLoader.dayOfWeek = store.dayOfWeek;
+            ModSimLoader.gameDay = store.gameDay;
+            stateLoaded = true;
+            lastWorldDay = -1L;
+            return;
+        }
+        ModSimLoader.money = store.money;
+        ModSimLoader.dayOfWeek = store.dayOfWeek;
+        ModSimLoader.gameDay = store.gameDay;
+        ModSimLoader.gamemode = store.gamemode;
+        ModSimLoader.appointed = store.appointed || store.gamemode != 999;
+        ModSimLoader.sim_is_running = ModSimLoader.gamemode != 999;
+        stateLoaded = true;
+        gamemodeDirty = false;
+        lastWorldDay = -1L;
+        ModSimLoader.log.info("模拟城市状态已加载: gamemode={}, appointed={}", ModSimLoader.gamemode, ModSimLoader.appointed);
+    }
+
+    /**
+     * 标记为已任命，并立即写入存档。
+     * 旧存档没有 appointed 字段时，玩家身上的新手工具包可以作为已任命的证据。
+     */
+    public static void markAppointed(World world) {
+        ModSimLoader.appointed = true;
+        SimStore store = SimStore.get(world);
+        if (store != null) {
+            store.appointed = true;
+            store.markDirty();
+        }
+    }
+
+    /**
      * 加载模组
      */
     public static void simModLoad(World world) {
@@ -134,11 +191,14 @@ public class SimmodeStart {
 
         // P1: 经济与日历来自 SimStore（NBT，不再用 settings.sk2）
         SimStore store = SimStore.get(world);
-        if (store != null) {
+        if (store != null && !stateLoaded && !gamemodeDirty) {
             ModSimLoader.money = store.money;
             ModSimLoader.dayOfWeek = store.dayOfWeek;
             ModSimLoader.gameDay = store.gameDay;
             ModSimLoader.gamemode = store.gamemode;
+            ModSimLoader.appointed = store.appointed || store.gamemode != 999;
+            ModSimLoader.sim_is_running = ModSimLoader.gamemode != 999;
+            stateLoaded = true;
         }
 
         // 农场 / 矿场 / 建筑：每个文件独立 try，字面量后缀截断
@@ -291,16 +351,19 @@ public class SimmodeStart {
         if (world == null || world.isRemote || world.provider.getDimension() != 0) {
             return;
         }
-        if (!hasLoadedWorld || !ModSimLoader.sim_is_running) {
+        if (!hasLoadedWorld && !stateLoaded) {
             return;
         }
         // P1: 经济/日历写入 SimStore（NBT）
         SimStore store = SimStore.get(world);
         if (store != null) {
-            store.money = ModSimLoader.money;
-            store.dayOfWeek = ModSimLoader.dayOfWeek;
-            store.gameDay = ModSimLoader.gameDay;
             store.gamemode = ModSimLoader.gamemode;
+            store.appointed = ModSimLoader.appointed;
+            if (stateLoaded) {
+                store.money = ModSimLoader.money;
+                store.dayOfWeek = ModSimLoader.dayOfWeek;
+                store.gameDay = ModSimLoader.gameDay;
+            }
             store.markDirty();
         }
         // 农场/矿场/NPC/建筑保存（NPC 现在是 NBT）
@@ -436,11 +499,14 @@ public class SimmodeStart {
 
         long startTime = System.currentTimeMillis();
         if (world != null) {
+            // 世界加载事件里存储可能还没就绪；在第一个 tick 继续补读，直到成功。
+            if (!stateLoaded) {
+                loadEconomyState(world);
+            }
             if (startTime - timeSinceLastClientUpdates > 15000L ) {
-                if(!hasLoadedWorld&&!ModSimLoader.sim_is_running){
+                // 经济/模式已在世界加载时读过；这里只负责 NPC、建筑等重数据。
+                if(!hasLoadedWorld){
                     simModLoad(world);
-                    ModSimLoader.sim_is_running=true;
-
                 }
                 //当前世界有玩家
                 if (world.playerEntities.size() > 0&&ModSimLoader.sim_is_running) {

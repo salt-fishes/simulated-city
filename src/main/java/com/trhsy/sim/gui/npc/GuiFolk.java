@@ -345,7 +345,7 @@ public class GuiFolk extends GuiScreen {
         int thumb = Math.max(10, height * visible / total);
         int maxOffset = Math.max(1, total - visible);
         int thumbY = y + 2 + (height - thumb - 4) * offset / maxOffset;
-        GuiStyle.panel(x + 1, thumbY, 4, thumb);
+        GuiStyle.scrollThumb(x + 1, thumbY, 4, thumb);
     }
 
     private void drawScrollbarPixels(int x, int y, int height, int total, int visible, int offset) {
@@ -356,7 +356,7 @@ public class GuiFolk extends GuiScreen {
         int thumb = Math.max(10, height * visible / total);
         int maxOffset = Math.max(1, total - visible);
         int thumbY = y + 2 + (height - thumb - 4) * offset / maxOffset;
-        GuiStyle.panel(x + 1, thumbY, 4, thumb);
+        GuiStyle.scrollThumb(x + 1, thumbY, 4, thumb);
     }
 
     private float parseSkill(String raw) {

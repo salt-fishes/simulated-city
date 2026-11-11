@@ -22,6 +22,12 @@ public class ClientWorldEvents {
         if (!event.getWorld().isRemote) {
             return;
         }
+        if (event.getWorld().provider.getDimension() != 0) {
+            return;
+        }
         ModSimClientLoader.sim_is_running = false;
+        ModSimClientLoader.gamemode = 999;
+        ModSimClientLoader.appointed = false;
+        ModSimClientLoader.buildingInfos.clear();
     }
 }

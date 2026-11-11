@@ -5,7 +5,7 @@
 ## 1. 对照口径
 
 - **基线（上游）**：`上游源码-原始/com/trhsy/sim`，`ModSim.VERSION = "1.12.2-1.0.9 Beta"`，253 个 `.java` 文件；公开上游为 <https://github.com/trhsy/sim>（分支 `1.12.2`）。
-- **当前（Beta13）**：`src/main/java/com/trhsy/sim`（本地工程为 `构建/src/main/java/com/trhsy/sim`），`ModSim.VERSION = "1.12.2-1.0.9 Beta13"`，237 个 `.java` 文件。
+- **当前（1.1.0）**：`src/main/java/com/trhsy/sim`（本地工程为 `构建/src/main/java/com/trhsy/sim`），`ModSim.VERSION = "1.12.2-1.0.9 Beta13"`，237 个 `.java` 文件。
 - **比对方法**：按相对路径逐文件计算 SHA-256；哈希相同记为“未改”，不同记为“修改”；只在一侧存在记为“新增/删除”。
 - **统计范围**：只统计 Java 源码，不含 `src/main/resources` 下的语言、模型、蓝图和贴图，也不含 `build.gradle`、`mcmod.info` 和打包脚本。
 - **注意**：这是**文件级**差异。119 个“修改”文件里有格式化、注释、异常日志和小修，不等于每个文件都重写；具体行为见第 6 节。
@@ -15,7 +15,7 @@
 | 状态 | 文件数 | 说明 |
 |---|---:|---|
 | 上游文件总数 | 253 | `1.12.2-1.0.9 Beta` |
-| 当前文件总数 | 237 | `1.12.2-1.0.9 Beta13` |
+| 当前文件总数 | 237 | `1.12.2-1.1.0` |
 | 未改动 | 94 | 与上游逐字节相同，包含部分核心职业与任务 |
 | 修改 | 119 | 主要分布在 `npcCode`（47）、`gui`（14）、`network`（14）、`loader`（12） |
 | 新增 | 24 | 存档、寻路、经济、物流、手册、兼容层 |
@@ -390,8 +390,10 @@ util/items/CommodityFlower.java
 这些不在 Java 文件统计里，但会直接影响游戏：
 
 - `buildings_zh_cn.zip`：346 个蓝图，352 个 zip 条目（含目录）；三个旧方块 ID 已清零。
+- 蓝图署名：按 1.7.10 旧版 `模拟大都市` 的 `AU` 字段恢复了 258 个 blueprint 的作者（106 个不同署名）；旧版对比明细见 `docs/旧版迁移-20261111/迁移报告.md`。
+- 蓝图转换清理：19 个旧控制箱被误转成 `minecraft:frosted_ice`、`射箭场`/`花盆酒店` 的旧建造箱被误转成 `chain_command_block`/`end_gateway`，均已清理；`水宫` 的 `+`/`-` 活板门符号冲突已改为 `a`/`b`。
 - `lang/zh_cn.lang`、`lang/en_us.lang`：手册、物流、新手提示的键已补齐；`container.sim.guide.*` 中英各 113 个。
-- `mcmod.info`：作者改为 `Simulated Community`，链接改为维护仓库，版本号 `1.12.2-1.0.9 Beta13`。
+- `mcmod.info`：作者改为 `Simulated Community`，链接改为维护仓库，版本号 `1.12.2-1.1.0`。
 - 旧方块状态/模型/语言键：铜、锡、风车、路径箱、复合砖、地毯方块对应的 `blockstates`、`models`、`lang` 键已删除；风车实体贴图仍留在 `textures/models/`，当前没有代码引用。
 - PCL 包：`Simulated-Beta13-Pack`，22 个模组 jar、Java 8 runtime、PCL 2.99.0.1、Sunflawer 光影（默认未启用）。
 

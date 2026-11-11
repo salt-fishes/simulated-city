@@ -1,18 +1,24 @@
 package com.trhsy.sim.gui;
 
+import com.trhsy.sim.loader.BlockLoader;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 市长手册：给第一次接触模拟城市的玩家一个随时可查的玩法入口。
  *
- * <p>内容只讲“下一步做什么”，不堆设定。页面用原版灰色面板，正文自动换行，
- * 小窗口下也不会把字画出屏幕。
+ * <p>内容只讲“下一步做什么”，不堆设定。页面用深色面板，正文自动换行，
+ * 小窗口下也不会把字画出屏幕。第 7–8 页是配方速查，直接画 3×3 合成格。
  */
 public class GuiCityGuide extends GuiScreen {
     private static final String[][] PAGES = new String[][]{
@@ -67,6 +73,14 @@ public class GuiCityGuide extends GuiScreen {
                     "container.sim.guide.materials.3",
                     "container.sim.guide.materials.4",
                     "container.sim.guide.materials.5"
+            },
+            {
+                    "container.sim.guide.recipes.title",
+                    "container.sim.guide.recipes.0"
+            },
+            {
+                    "container.sim.guide.recipes.title2",
+                    "container.sim.guide.recipes.1"
             },
             {
                     "container.sim.guide.page.3.title",
@@ -156,15 +170,76 @@ public class GuiCityGuide extends GuiScreen {
             }
     };
 
+    /** 配方速查页在 PAGES 里的下标。 */
+    private static final int RECIPE_PAGE = 6;
+    private static final int RECIPE_PAGE_2 = 7;
+
+    /** 一张配方卡：3×3 摆放 + 产物。 */
+    private static final class RecipeCard {
+        final String titleKey;
+        final String noteKey;
+        final ItemStack[] grid;
+        final ItemStack output;
+
+        RecipeCard(String titleKey, String noteKey, ItemStack output, ItemStack... grid) {
+            this.titleKey = titleKey;
+            this.noteKey = noteKey;
+            this.output = output;
+            this.grid = new ItemStack[9];
+            for (int i = 0; i < 9; i++) {
+                this.grid[i] = i < grid.length && grid[i] != null ? grid[i] : ItemStack.EMPTY;
+            }
+        }
+    }
+
+    private static final List<RecipeCard> RECIPES = new ArrayList<RecipeCard>();
+
+    static {
+        ItemStack planks = new ItemStack(Blocks.PLANKS, 1, 0);
+        ItemStack cobble = new ItemStack(Blocks.COBBLESTONE);
+        ItemStack table = new ItemStack(Blocks.CRAFTING_TABLE);
+        ItemStack stick = new ItemStack(Items.STICK);
+        ItemStack yellowDye = new ItemStack(Items.DYE, 1, 11);
+
+        RECIPES.add(new RecipeCard(
+                "container.sim.guide.recipes.constructor",
+                "container.sim.guide.recipes.note.planks",
+                new ItemStack(BlockLoader.blockConstructorBox),
+                planks, planks, planks,
+                cobble, table, cobble,
+                cobble, cobble, cobble));
+
+        RECIPES.add(new RecipeCard(
+                "container.sim.guide.recipes.marker",
+                "container.sim.guide.recipes.note.marker",
+                new ItemStack(BlockLoader.blockMarker),
+                ItemStack.EMPTY, yellowDye, ItemStack.EMPTY,
+                ItemStack.EMPTY, stick, ItemStack.EMPTY,
+                ItemStack.EMPTY, stick, ItemStack.EMPTY));
+
+        RECIPES.add(new RecipeCard(
+                "container.sim.guide.recipes.farming",
+                "container.sim.guide.recipes.note.hoe",
+                new ItemStack(BlockLoader.blockFarmingBox),
+                planks, planks, planks,
+                cobble, new ItemStack(Items.IRON_HOE), cobble,
+                cobble, cobble, cobble));
+
+        RECIPES.add(new RecipeCard(
+                "container.sim.guide.recipes.mining",
+                "container.sim.guide.recipes.note.pickaxe",
+                new ItemStack(BlockLoader.blockMiningBox),
+                planks, planks, planks,
+                cobble, new ItemStack(Items.IRON_PICKAXE), cobble,
+                cobble, cobble, cobble));
+    }
+
     private final GuiScreen parent;
     private int page = 0;
-    private int panelX;
-    private int panelY;
-    private int panelW;
-    private int panelH;
     private int contentX;
     private int contentW;
     private int contentBottom;
+    private ItemStack hoveredStack = ItemStack.EMPTY;
 
     public GuiCityGuide() {
         this(null);
@@ -183,21 +258,17 @@ public class GuiCityGuide extends GuiScreen {
     public void initGui() {
         this.buttonList.clear();
 
-        this.panelW = Math.min(440, Math.max(260, this.width - 30));
-        this.panelH = Math.min(260, Math.max(190, this.height - 30));
-        this.panelX = (this.width - this.panelW) / 2;
-        this.panelY = (this.height - this.panelH) / 2;
-        this.contentX = this.panelX + 14;
-        this.contentW = this.panelW - 28;
-        this.contentBottom = this.panelY + this.panelH - 48;
+        this.contentW = Math.min(440, Math.max(240, this.width - 40));
+        this.contentX = (this.width - this.contentW) / 2;
+        this.contentBottom = this.height - 48;
 
-        int buttonW = 56;
+        int buttonW = 72;
         int gap = 6;
-        int tocW = 52;
-        int closeW = 52;
+        int tocW = 64;
+        int closeW = 64;
         int totalW = buttonW * 2 + tocW + closeW + gap * 3;
-        int startX = this.panelX + (this.panelW - totalW) / 2;
-        int buttonY = this.panelY + this.panelH - 25;
+        int startX = (this.width - totalW) / 2;
+        int buttonY = this.height - 28;
 
         GuiButton prev = new GuiButton(0, startX, buttonY, buttonW, 20,
                 I18n.format("container.sim.guide.prev"));
@@ -219,33 +290,117 @@ public class GuiCityGuide extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        GuiStyle.panel(this.panelX, this.panelY, this.panelW, this.panelH);
 
         String title = this.t(PAGES[this.page][0]);
-        GuiStyle.text(this.fontRenderer, this.panelX + 14, this.panelY + 8, title, GuiStyle.TEXT);
-        GuiStyle.textRight(this.fontRenderer, this.panelX + this.panelW - 14, this.panelY + 8,
-                I18n.format("container.sim.guide.page", this.page + 1, PAGES.length), GuiStyle.TEXT_MUTED);
-        GuiStyle.divider(this.panelX + 8, this.panelY + 20, this.panelW - 16);
+        GuiStyle.text(this.fontRenderer, (this.width - this.fontRenderer.getStringWidth(title)) / 2, 15,
+                title, GuiStyle.WHITE);
+        GuiStyle.textRight(this.fontRenderer, this.width - 10, 15,
+                I18n.format("container.sim.guide.page", this.page + 1, PAGES.length), GuiStyle.LIGHT_MUTED);
 
-        int y = this.panelY + 28;
-        boolean overflow = false;
-        for (int i = 1; i < PAGES[this.page].length && !overflow; i++) {
-            List<String> lines = GuiLayout.wrap(this.fontRenderer, this.t(PAGES[this.page][i]), this.contentW);
-            for (String line : lines) {
-                if (y > this.contentBottom) {
-                    overflow = true;
-                    break;
+        this.hoveredStack = ItemStack.EMPTY;
+        if (this.page == RECIPE_PAGE || this.page == RECIPE_PAGE_2) {
+            this.drawRecipePage(this.page == RECIPE_PAGE ? 0 : 2, mouseX, mouseY);
+        } else {
+            int y = 40;
+            boolean overflow = false;
+            for (int i = 1; i < PAGES[this.page].length && !overflow; i++) {
+                List<String> lines = GuiLayout.wrap(this.fontRenderer, this.t(PAGES[this.page][i]), this.contentW);
+                for (String line : lines) {
+                    if (y > this.contentBottom - 10) {
+                        overflow = true;
+                        break;
+                    }
+                    GuiStyle.text(this.fontRenderer, this.contentX, y, line, GuiStyle.WHITE);
+                    y += 10;
                 }
-                GuiStyle.text(this.fontRenderer, this.contentX, y, line, GuiStyle.TEXT);
-                y += 10;
+                y += 3;
             }
-            y += 3;
         }
 
-        GuiStyle.text(this.fontRenderer, this.panelX + 14, this.panelY + this.panelH - 39,
-                I18n.format("container.sim.guide.hint"), GuiStyle.TEXT_MUTED);
+        String hint = I18n.format("container.sim.guide.hint");
+        GuiStyle.text(this.fontRenderer, (this.width - this.fontRenderer.getStringWidth(hint)) / 2,
+                this.height - 42, hint, GuiStyle.LIGHT_MUTED);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
+
+        if (this.hoveredStack != null && !this.hoveredStack.isEmpty()) {
+            this.renderToolTip(this.hoveredStack, mouseX, mouseY);
+        }
+    }
+
+    /** 配方速查：每页 2 张 3×3 卡片，共 2 页。 */
+    private void drawRecipePage(int startIndex, int mouseX, int mouseY) {
+        GuiStyle.text(this.fontRenderer, this.contentX, 28,
+                GuiLayout.truncate(this.fontRenderer, this.t(PAGES[this.page][1]), this.contentW),
+                GuiStyle.LIGHT_MUTED);
+
+        int gap = 6;
+        int top = 42;
+        int cardH = (this.contentBottom - top - gap) / 2;
+        if (cardH < 72) {
+            GuiStyle.text(this.fontRenderer, this.contentX, top + 16,
+                    GuiLayout.truncate(this.fontRenderer, this.t("container.sim.guide.recipes.too_small"), this.contentW),
+                    0xFFFF8080);
+            return;
+        }
+        for (int i = 0; i < 2 && startIndex + i < RECIPES.size(); i++) {
+            int y = top + i * (cardH + gap);
+            this.drawRecipeCard(RECIPES.get(startIndex + i), this.contentX, y, this.contentW, cardH, mouseX, mouseY);
+        }
+    }
+
+    private void drawRecipeCard(RecipeCard recipe, int x, int y, int w, int h, int mouseX, int mouseY) {
+        GuiStyle.text(this.fontRenderer, x + 2, y + 2,
+                GuiLayout.truncate(this.fontRenderer, this.t(recipe.titleKey), w - 4), GuiStyle.WHITE);
+
+        int gridX = x + 2;
+        int gridY = y + 13;
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                int sx = gridX + col * 18;
+                int sy = gridY + row * 18;
+                GuiStyle.slot(sx, sy);
+                ItemStack stack = recipe.grid[row * 3 + col];
+                if (stack != null && !stack.isEmpty()) {
+                    this.drawItem(stack, sx + 1, sy + 1);
+                    this.rememberHover(stack, sx, sy, mouseX, mouseY);
+                }
+            }
+        }
+
+        int arrowX = gridX + 58;
+        int slotX = gridX + 68;
+        GuiStyle.text(this.fontRenderer, arrowX, gridY + 22, ">", GuiStyle.LIGHT_MUTED);
+        GuiStyle.slot(slotX, gridY + 18);
+        this.drawItem(recipe.output, slotX + 1, gridY + 19);
+        this.rememberHover(recipe.output, slotX, gridY + 18, mouseX, mouseY);
+
+        int noteX = slotX + 24;
+        int noteW = Math.max(20, x + w - noteX - 2);
+        List<String> noteLines = GuiLayout.wrap(this.fontRenderer, this.t(recipe.noteKey), noteW);
+        int noteY = gridY + 4;
+        for (int i = 0; i < noteLines.size() && i < 4 && noteY + i * 10 < y + h - 2; i++) {
+            GuiStyle.text(this.fontRenderer, noteX, noteY + i * 10, noteLines.get(i), GuiStyle.LIGHT_MUTED);
+        }
+    }
+
+    private void drawItem(ItemStack stack, int x, int y) {
+        if (stack == null || stack.isEmpty()) {
+            return;
+        }
+        RenderHelper.enableGUIStandardItemLighting();
+        this.itemRender.renderItemAndEffectIntoGUI(stack, x, y);
+        this.itemRender.renderItemOverlayIntoGUI(this.fontRenderer, stack, x, y, null);
+        RenderHelper.disableStandardItemLighting();
+    }
+
+    private void rememberHover(ItemStack stack, int x, int y, int mouseX, int mouseY) {
+        if (stack == null || stack.isEmpty()) {
+            return;
+        }
+        if (mouseX >= x && mouseX < x + 18 && mouseY >= y && mouseY < y + 18) {
+            this.hoveredStack = stack;
+        }
     }
 
     @Override

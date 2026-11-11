@@ -1,6 +1,6 @@
 # 模拟城市 1.12.2 精选整合包 / Simulated City Community Edition
 
-> 当前版本：**1.0.9 Beta13**  
+> 当前版本：**1.1.0**  
 > 游戏版本：Minecraft **1.12.2** / Forge **14.23.5.2860** / Java **8**  
 > 维护仓库：<https://github.com/salt-fishes/simulated-city>  
 > 下载：<https://github.com/salt-fishes/simulated-city/releases>
@@ -11,7 +11,10 @@
 
 ## 这个版本有什么
 
-- **16 页市长手册**（`gui/GuiCityGuide.java`）：游戏内按 `V` 打开，第 1 页是目录，其余 15 页覆盖开局、第一栋建筑、建筑列表、材料、经济、农业、采矿、职业、商店/物流、NPC 生活、第一天路线、FAQ 和发展史。
+- **18 页市长手册**（`gui/GuiCityGuide.java`）：游戏内按 `V` 打开，第 2 页是目录，第 7–8 页是带图标和 3×3 摆放的配方速查，其余页覆盖开局、第一栋建筑、建筑列表、材料、经济、农业、采矿、职业、商店/物流、NPC 生活、第一天路线、FAQ 和发展史。
+- **左上角城市 HUD**（`proxy/ClientProxy.java`）：纯文字显示世界、天数、星期、季节（检测到 Serene Seasons 时）、人口和资金；不再加底条，窄屏自动换两行。
+- **原版风格界面**：市长手册和任命/模式界面改为全屏暗化背景 + 白色标题 + 原版 `GuiButton`；建筑箱、控制箱等管理界面使用原版灰色面板。
+- **任命状态修复**：世界加载时立即读取模式，接受任命后立即写入 `SimStore`；已经拿到新手工具的玩家再打开建筑箱不会重复要求任命。
 - **启动卷轴不消耗**（`item/ItemSimULoader.java`）：右键只打开任命/模式界面，不再 `splitStack(1)`；接受任命后由 `util/Onboarding.java` 发建筑箱 ×1、标记棒 ×3。
 - **建筑列表重做**（`gui/block/GuiBlockConstructorBlock.java`）：分类页签、搜索、表头点击排序、占地筛选、预算筛选、重置、滚轮、整行点击。
 - **材料族兼容**（`util/WoodHelper.java` + `npcCode/build/BuildingBlueprint.java`）：正常/创造模式下，木板、原木、木栅栏、羊毛可以交任意变种；放置仍使用蓝图原本的方块状态。
@@ -26,7 +29,7 @@
 | 状态 | 文件数 | 说明 |
 |---|---:|---|
 | 上游文件总数 | 253 | `1.12.2-1.0.9 Beta` |
-| 当前文件总数 | 237 | `1.12.2-1.0.9 Beta13` |
+| 当前文件总数 | 237 | `1.12.2-1.1.0` |
 | 未改动 | 94 | 与上游逐字节相同，含 `JobLumberjack`、`JobMiner`、`JobTerrainFormer` 等原版职业 |
 | 修改 | 119 | 主要在 `npcCode` 47、`gui` 14、`network` 14、`loader` 12 |
 | 新增 | 24 | 存档、寻路、经济、物流、手册、兼容层 |
@@ -63,7 +66,7 @@
 
 ### 界面与引导
 
-- `GuiCityGuide` + `KeyboardManager`：`V` 键打开 16 页手册；`Onboarding` 负责补发卷轴、新手工具和一次性提示。
+- `GuiCityGuide` + `KeyboardManager`：`V` 键打开 18 页手册，第 7–8 页是配方速查；`Onboarding` 负责补发卷轴、新手工具和一次性提示。
 - `GuiBlockConstructorBlock`：搜索、表头排序、占地/预算筛选、重置、滚轮、整行点击；点击表头名称/占地/费用/来源可切换排序方向。
 - `PacketSetupMod`：只接受 `0/1/999`；非单人服务器要求 OP；首次从 `999` 进入城市时发新手工具。
 - `GuiStyle` / `GuiLayout`：统一原版灰色面板、居中、换行和裁剪。
@@ -77,9 +80,9 @@
 
 ## 快速开始（PCL 完整版）
 
-1. 从 [Releases](https://github.com/salt-fishes/simulated-city/releases) 下载 `Simulated-City-1.12.2-1.0.9-beta13-PCL.zip`；
+1. 从 [Releases](https://github.com/salt-fishes/simulated-city/releases) 下载 `Simulated-City-1.12.2-1.1.0-PCL.zip`；
 2. 解压到任意目录（不要在压缩包里直接运行）；
-3. 双击 `启动器.bat` 打开 PCL2，确认选中的是 `Simulated-Beta13-Pack`；
+3. 双击 `启动器.bat` 打开 PCL2，确认选中的是 `Simulated-1.1.0-Pack`；
 4. 点击“启动游戏”。不需要下载游戏本体或 Java。
 
 备用方式：直接双击 `启动游戏.bat`，不经过 PCL 启动预置版本（离线用户名 `Player`）。
@@ -113,7 +116,7 @@ gradlew.bat build
 产物：
 
 ```text
-build\libs\simulated-1.12.2-1.0.9 Beta13.jar
+build\libs\simulated-1.12.2-1.1.0.jar
 ```
 
 本地工作目录里工程放在 `构建\` 下，所以产物是 `构建\build\libs\...`；GitHub 仓库根目录直接放 `build.gradle`，两者源码相同。构建前请确认 `JAVA_HOME` 指向 JDK 8；`build.gradle` 会使用 `JAVA_HOME` 下的 `javac`。
@@ -146,7 +149,7 @@ Pam's-HarvestCraft-汉化/ 潘马斯农场简体中文补全资源包
 
 - 蓝图中的**门、床、告示牌、楼梯、火把、画/展示框**放置仍有已知问题：门/床可能偏移或缺少半块，告示牌文字会丢失，楼梯转角会错，画/展示框可能因墙体替换而掉落。详细报告见 [docs/blueprint-special-blocks.md](docs/blueprint-special-blocks.md)。
 - **专家/硬核模式**目前没有恢复入口：GUI 没有按钮，服务端只接受 `0/1/999`，`isRequiredBlock` 也没有“全部材料”分支。正常/创造模式不受影响。
-- 启动日志里仍可能出现少量旧蓝图/第三方模组提示；如果出现 `addBuildingBlueprint` 空指针，请确认使用的是 Beta13 或更新版本。
+- 启动日志里仍可能出现少量旧蓝图/第三方模组提示；如果出现 `addBuildingBlueprint` 空指针，请确认使用的是 1.1.0 或更新版本。
 
 ## 参与贡献
 
@@ -184,8 +187,8 @@ Pam's-HarvestCraft-汉化/ 潘马斯农场简体中文补全资源包
 **Simulated City Community Edition** is a community-maintained Minecraft 1.12.2 city-simulation modpack. It keeps the original city-building loop, existing blueprints and job values, while fixing bugs, adding Chinese localization, improving onboarding, and cleaning up legacy content.
 
 - Requires Minecraft 1.12.2, Forge 14.23.5.2860, Java 8.
-- Download the PCL full package from [Releases](https://github.com/salt-fishes/simulated-city/releases); extract, run `启动器.bat`, and launch `Simulated-Beta13-Pack`.
-- Press `V` in game for the 16-page mayor's handbook.
+- Download the PCL full package from [Releases](https://github.com/salt-fishes/simulated-city/releases); extract, run `启动器.bat`, and launch `Simulated-1.1.0-Pack`.
+- Press `V` in game for the 18-page mayor's handbook; pages 7-8 show 3x3 recipe layouts.
 - Source diff against upstream 1.0.9 Beta: 94 files unchanged, 119 modified, 24 added, 40 removed; see [docs/upstream-diff.md](docs/upstream-diff.md).
 - Build from source with JDK 8: `git clone https://github.com/salt-fishes/simulated-city.git && cd simulated-city && gradlew.bat build`.
 - Known issue: door/bed/sign/stairs/torch/painting placement in blueprints is still being fixed; see [docs/blueprint-special-blocks.md](docs/blueprint-special-blocks.md).

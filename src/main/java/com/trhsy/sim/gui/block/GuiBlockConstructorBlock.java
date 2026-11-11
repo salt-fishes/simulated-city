@@ -966,12 +966,10 @@ public class GuiBlockConstructorBlock extends GuiScreen {
                 boolean hover = mouseX >= px + 8 && mouseX <= px + pw - 8
                         && mouseY >= y && mouseY < y + LIST_ROW_H
                         && mouseY < listTop + listHeight;
-                GuiStyle.row(px + 8, y, pw - 16, LIST_ROW_H, hover || i % 2 == 1);
                 if (hover) {
-                    Gui.drawRect(px + 8, y, px + pw - 8, y + 1, GuiStyle.BORDER);
-                    Gui.drawRect(px + 8, y + LIST_ROW_H - 1, px + pw - 8, y + LIST_ROW_H, GuiStyle.BORDER);
-                    Gui.drawRect(px + 8, y, px + 9, y + LIST_ROW_H, GuiStyle.BORDER);
-                    Gui.drawRect(px + pw - 9, y, px + pw - 8, y + LIST_ROW_H, GuiStyle.BORDER);
+                    GuiStyle.hoverRow(px + 8, y, pw - 16, LIST_ROW_H);
+                } else {
+                    GuiStyle.row(px + 8, y, pw - 16, LIST_ROW_H, i % 2 == 1);
                 }
                 GuiStyle.text(this.fontRenderer, columns[0], y + 6,
                         GuiLayout.truncate(this.fontRenderer, blueprint.name, columns[4]), GuiStyle.TEXT);

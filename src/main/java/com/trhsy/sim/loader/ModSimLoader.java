@@ -72,6 +72,8 @@ public class ModSimLoader {
      * 游戏模式编号 999 未开启模式   0正常模式   1创造模式
      **/
     public static int gamemode = 999;
+    /** 是否已经接受过任命；切到“不启动”后仍保留。 */
+    public static boolean appointed = false;
     //金钱
     public static float money = 10.0F;
     /**
@@ -819,7 +821,7 @@ public class ModSimLoader {
     public static Building getBuildingByUUID(String uuid) {
         Building b1 = null;
         for (Building b : buildings) {
-            if (b.ID.toString().contentEquals(uuid)) {
+            if (b != null && b.ID != null && b.ID.toString().contentEquals(uuid)) {
                 b1 = b;
                 return b1;
             }

@@ -61,6 +61,8 @@ public class SimStore extends WorldSavedData {
     public int dayOfWeek = 0;
     public int gameDay = 0;
     public int gamemode = 999;
+    /** 是否已经接受过任命；即使之后切到“不启动”也保持 true。 */
+    public boolean appointed = false;
 
     /** MapStorage 反射构造需要 String 构造器。 */
     public SimStore(String name) {
@@ -77,6 +79,9 @@ public class SimStore extends WorldSavedData {
             return null;
         }
         MapStorage storage = world.getPerWorldStorage();
+        if (storage == null) {
+            return null;
+        }
         SimStore data = (SimStore) storage.getOrLoadData(SimStore.class, DATA_NAME);
         if (data == null) {
             data = new SimStore();
@@ -199,6 +204,8 @@ public class SimStore extends WorldSavedData {
         dayOfWeek = nbt.getInteger("dayOfWeek");
         gameDay = nbt.getInteger("gameDay");
         gamemode = nbt.hasKey("gamemode") ? nbt.getInteger("gamemode") : 999;
+        // 旧存档没有 appointed 字段：只要曾经选过创造/正常模式，就视为已任命。
+        appointed = nbt.hasKey("appointed") ? nbt.getBoolean("appointed") : gamemode != 999;
         NBTTagList list = nbt.getTagList("npcs", 10);
         for (int i = 0; i < list.tagCount(); i++) {
             NBTTagCompound tag = list.getCompoundTagAt(i);
@@ -275,6 +282,7 @@ public class SimStore extends WorldSavedData {
         nbt.setInteger("dayOfWeek", dayOfWeek);
         nbt.setInteger("gameDay", gameDay);
         nbt.setInteger("gamemode", gamemode);
+        nbt.setBoolean("appointed", appointed);
         NBTTagList list = new NBTTagList();
         for (Map.Entry<UUID, NBTTagCompound> e : npcs.entrySet()) {
             NBTTagCompound tag = e.getValue();

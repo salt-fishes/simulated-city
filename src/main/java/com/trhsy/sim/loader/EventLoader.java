@@ -104,6 +104,17 @@ public class EventLoader {
         // 卷轴不再消耗；丢了/换了新玩家都补一个，保证随时能打开任命书和手册。
         Onboarding.giveScroll(player);
 
+        // 世界加载事件里若读取失败（例如存档存储尚未就绪），玩家加入时再补一次。
+        if (!SimmodeStart.stateLoaded) {
+            SimmodeStart.loadEconomyState(player.world);
+        }
+        // 旧存档迁移：玩家身上已经有新手工具，说明他曾经任命过。
+        if (!ModSimLoader.appointed && Onboarding.hasStarterKit(player)) {
+            SimmodeStart.markAppointed(player.world);
+        }
+        // 玩家加入时立刻同步一次权威状态，客户端不用等 1 秒轮询或 15 秒加载。
+        NetWorkLoader.net.sendTo(new PacketUpdateMoney(), (EntityPlayerMP) player);
+
         if (ModSimLoader.gamemode != 999 && Onboarding.giveStarterKit(player)) {
             Onboarding.send(player, "container.sim.kit.given");
             Onboarding.send(player, "container.sim.tip.start");
@@ -112,7 +123,7 @@ public class EventLoader {
 
         // 第一次进世界只提示一次，避免每次登录刷屏。
         if (Onboarding.markWelcomeTip(player)) {
-            Onboarding.send(player, ModSimLoader.gamemode == 999
+            Onboarding.send(player, ModSimLoader.gamemode == 999 && !ModSimLoader.appointed
                     ? "container.sim.welcome.tip.new"
                     : "container.sim.welcome.tip.started");
         }
@@ -223,10 +234,15 @@ public class EventLoader {
         ModSimLoader.dayOfWeek = 0;
         ModSimLoader.gameDay = 0;
         ModSimLoader.gamemode = 999;
+        ModSimLoader.appointed = false;
         ModSimLoader.money = 10.0F;
         ModSimLoader.sim_is_running = false;
         // P0: 允许同一进程内重进世界时重新加载（原来只清数据不重置加载标志）
         SimmodeStart.hasLoadedWorld = false;
+        SimmodeStart.stateLoaded = false;
+        SimmodeStart.gamemodeDirty = false;
+        // 经济/日历/模式在玩家加入或第一个服务端 tick 时立刻读取；
+        // 不在 WorldEvent.Load 里读，避免存档存储尚未就绪。
         // P0: 不再在这里碰 ModSimClientLoader（客户端类）。客户端镜像的重置移到
         // ClientWorldEvents，由 ClientProxy 注册（D13）。
         SimmodeStart.timeSinceLastClientUpdates=System.currentTimeMillis();

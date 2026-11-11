@@ -16,15 +16,24 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  * @date 2022/9/22 0022 下午 3:41
  */
 public class PacketOpenSetupGui implements IMessage {
+    private int gamemode;
+    private boolean appointed;
+
+    public PacketOpenSetupGui() {
+        this.gamemode = ModSimLoader.gamemode;
+        this.appointed = ModSimLoader.appointed;
+    }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-
+        this.gamemode = buf.readInt();
+        this.appointed = buf.readBoolean();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-
+        buf.writeInt(this.gamemode);
+        buf.writeBoolean(this.appointed);
     }
 
     public static class Handler implements IMessageHandler<PacketOpenSetupGui, IMessage> {
@@ -45,6 +54,9 @@ public class PacketOpenSetupGui implements IMessage {
         }
 
         private void handle(PacketOpenSetupGui message, MessageContext ctx) {
+            // 用服务端随包带来的状态，避免客户端还没收到 PacketUpdateMoney 时误显示任命书。
+            ModSimClientLoader.gamemode = message.gamemode;
+            ModSimClientLoader.appointed = message.appointed;
             ModSimClientLoader.openSetupGui();
         }
     }

@@ -13,6 +13,7 @@ import com.trhsy.sim.npcCode.V3;
 import com.trhsy.sim.npcCode.block.Marker;
 import com.trhsy.sim.npcCode.build.BlueprintRequirements;
 import com.trhsy.sim.npcCode.build.BuildingBlueprint;
+import com.trhsy.sim.npcCode.build.BuildingInfo;
 import com.trhsy.sim.npcCode.enums.FarmType;
 import com.trhsy.sim.npcCode.logistics.LogisticsSnapshot;
 import net.minecraft.client.Minecraft;
@@ -40,11 +41,25 @@ public class ModSimClientLoader {
     /** 物流中心 GUI 最近一次服务端快照。 */
     public static LogisticsSnapshot logisticsSnapshot;
 
+    /** 建筑传送列表（服务端同步过来的轻量建筑数据）。 */
+    public static List<BuildingInfo> buildingInfos = new CopyOnWriteArrayList<BuildingInfo>();
+
     /** 收到物流快照后更新缓存；如果正停在物流页则重绘。 */
     public static void applyLogisticsSnapshot(LogisticsSnapshot snapshot) {
         logisticsSnapshot = snapshot;
         if (Minecraft.getMinecraft().currentScreen instanceof GuiBlockControllerBlock) {
             ((GuiBlockControllerBlock) Minecraft.getMinecraft().currentScreen).refreshLogisticsPage();
+        }
+    }
+
+    /** 收到建筑列表后更新缓存；如果传送 GUI 正开着就重绘。 */
+    public static void applyBuildingList(List<BuildingInfo> infos) {
+        buildingInfos.clear();
+        if (infos != null) {
+            buildingInfos.addAll(infos);
+        }
+        if (Minecraft.getMinecraft().currentScreen instanceof GuiBuildingTeleportList) {
+            ((GuiBuildingTeleportList) Minecraft.getMinecraft().currentScreen).refreshList();
         }
     }
 
@@ -90,7 +105,9 @@ public class ModSimClientLoader {
      */
     public static Vec3d previewPos1;
     public static Vec3d previewPos2;
-    public static int gamemode;
+    public static int gamemode = 999;
+    /** 是否已经接受过任命 */
+    public static boolean appointed = false;
     //周几
     public static int dayOfWeek;
     public static int gameDay;

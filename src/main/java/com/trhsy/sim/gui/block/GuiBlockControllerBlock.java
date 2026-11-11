@@ -306,6 +306,7 @@ public class GuiBlockControllerBlock extends GuiScreen {
             if (this.isCourierJob()) {
                 this.buttonList.add(new GuiButton(30, px + 8 + index * (btnW + gap), btnY, btnW, 20,
                         new TextComponentTranslation("container.sim.gui.logistics", new Object[0]).getUnformattedText()));
+                index++;
             }
 
             this.addFireButtons();

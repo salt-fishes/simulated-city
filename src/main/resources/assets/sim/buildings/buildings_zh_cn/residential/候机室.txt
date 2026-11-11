@@ -1,0 +1,6 @@
+5x5x4
+B=minecraft:cobblestone,0;C=minecraft:wool,0;D=minecraft:planks,0;E=minecraft:bed,1;F=minecraft:bed,9;G=minecraft:oak_stairs,1;H=minecraft:torch,3;I=minecraft:glass_pane,0;AU=SpatialHeather;DIR=2;DESC=暂无;
+BB$BBBCCCBBCCCBBCCCBBBBBB
+BDADBDA!ADDEAADDFAGDBDDDB
+BDADBDAAADDAAHDDAAADBDIDB
+BD*DBDAAADDAAADDAAADBDDDB

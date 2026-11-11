@@ -1,5 +1,6 @@
 package com.trhsy.sim.gui.npc;
 
+
 import com.trhsy.sim.ModSim;
 import com.trhsy.sim.entity.EntityNpc;
 import com.trhsy.sim.entity.container.ContainerNpc;
