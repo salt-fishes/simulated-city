@@ -51,9 +51,11 @@
 
 ## 下载
 
-- 文件：`Simulated-City-1.12.2-1.1.0-PCL.zip`（待上传）
+- 文件：`Simulated-City-1.12.2-1.1.0-PCL.zip`（298,497,277 字节）
+- SHA-256：`C3D284CFEC955AF6A5AD2B07B37B509C102C9C767E91065E5E7DBA98F156214F`
 - 解压后双击 `启动器.bat`，确认选中 `Simulated-1.1.0-Pack`
 - 备用：`启动游戏.bat`（离线用户名 `Player`）
+- 单独 mod jar：`simulated-1.12.2-1.1.0.jar`（SHA-256 `71679505C5F5B61F3521DEDAA110CF997E2EEC2533EA99782272121FED104BD7`）
 
 ## 已知问题
 
